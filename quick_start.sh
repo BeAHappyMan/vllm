@@ -88,7 +88,7 @@ case $option in
         echo "   - 1 Proxy server (port 8000)"
         
         # Set environment variables for test deployment
-        export MODEL_NAME="meta-llama/Meta-Llama-3.1-8B-Instruct"
+        export MODEL_NAME="/app/model/"
         export MAX_MODEL_LEN=2048
         export GPU_MEMORY_UTIL=0.8
         export KV_BUFFER_SIZE=1.0
