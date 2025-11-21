@@ -148,7 +148,7 @@ async def handle_request():
             decode_zmq_addr = decode_zmq_addr[0]
 
         print(
-            f"handle_request count: {count}, [HTTP:{prefill_addr}, "
+            f"1231123handle_request count: {count}, [HTTP:{prefill_addr}, "
             f"ZMQ:{prefill_zmq_addr}] 👉 [HTTP:{decode_addr}, "
             f"ZMQ:{decode_zmq_addr}]"
         )
