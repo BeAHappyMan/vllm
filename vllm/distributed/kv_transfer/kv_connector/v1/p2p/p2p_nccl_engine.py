@@ -498,6 +498,8 @@ class P2pNcclEngine:
             )
 
     def send_sync(self, item: SendQueueItem) -> bool:
+        print(123)
+        logger.info("🚀Send Tensor, %s 👉 %s, MyRank:%s, tensor:%s", self.zmq_address, item.remote_address, rank, tensor.shape)
         if item.remote_address is None:
             return False
         if item.remote_address not in self.socks:
