@@ -363,7 +363,7 @@ class P2pNcclEngine:
                 data["shape"], dtype=getattr(torch, data["dtype"]), device=self.device
             )
 
-        self.recv(comm, tensor, rank ^ 1, self.recv_stream)
+        self.recv(comm, tensor, rank ^ 1, self.recv_stream, tensor_id=tensor_id)
 
         return tensor
 
@@ -401,7 +401,8 @@ class P2pNcclEngine:
                         )
                     self.router_socket.send_multipart([remote_address, b"0"])
                     comm, rank = self.comms[remote_address.decode()]
-                    self.recv(comm, tensor, rank ^ 1, self.recv_stream)
+
+                    self.recv(comm, tensor, rank ^ 1, self.recv_stream, tensor_id=tensor_id)
                     tensor_size = tensor.element_size() * tensor.numel()
                     if self.buffer_size + tensor_size > self.buffer_size_threshold:
                         # Store Tensor in memory pool
@@ -453,7 +454,13 @@ class P2pNcclEngine:
 
                 if data["ret"] == 0:
                     comm, rank = self.comms[remote_address.decode()]
-                    self.send(comm, tensor.to(self.device), rank ^ 1, self.send_stream)
+                    self.send(
+                        comm,
+                        tensor.to(self.device),
+                        rank ^ 1,
+                        self.send_stream,
+                        tensor_id=tensor_id,
+                    )
             else:
                 logger.warning(
                     "🚧Unexpected, Received message from %s, data:%s",
@@ -530,7 +537,13 @@ class P2pNcclEngine:
             )
             return False
 
-        self.send(comm, tensor.to(self.device), rank ^ 1, self.send_stream)
+        self.send(
+            comm,
+            tensor.to(self.device),
+            rank ^ 1,
+            self.send_stream,
+            tensor_id=item.tensor_id,
+        )
 
         if self.send_type == "PUT_ASYNC":
             self.have_sent_tensor_id(item.tensor_id)
@@ -586,14 +599,15 @@ class P2pNcclEngine:
             sock.send(msgpack.dumps(data))
             time.sleep(3)
 
-    def send(self, comm, tensor: torch.Tensor, dst: int, stream=None):
+    def send(self, comm, tensor: torch.Tensor, dst: int, stream=None, tensor_id: str | None = None):
         assert tensor.device == self.device, (
             f"this nccl communicator is created to work on {self.device}, "
             f"but the input tensor is on {tensor.device}"
         )
         if stream is None:
             stream = current_stream()
-
+        tensor_size = tensor.element_size() * tensor.numel()
+        start_time = time.time()
         with torch.cuda.stream(stream):
             self.nccl.ncclSend(
                 buffer_type(tensor.data_ptr()),
@@ -604,15 +618,25 @@ class P2pNcclEngine:
                 cudaStream_t(stream.cuda_stream),
             )
         stream.synchronize()
+        duration = time.time() - start_time
+        logger.info(
+            "📤[NCCL SEND] tensor_id:%s size_bytes:%d duration_ms:%.3f dst:%d rank:%d",
+            tensor_id,
+            int(tensor_size),
+            duration * 1000,
+            dst,
+            self.rank,
+        )
 
-    def recv(self, comm, tensor: torch.Tensor, src: int, stream=None):
+    def recv(self, comm, tensor: torch.Tensor, src: int, stream=None, tensor_id: str | None = None):
         assert tensor.device == self.device, (
             f"this nccl communicator is created to work on {self.device}, "
             f"but the input tensor is on {tensor.device}"
         )
         if stream is None:
             stream = current_stream()
-
+        tensor_size = tensor.element_size() * tensor.numel()
+        start_time = time.time()
         with torch.cuda.stream(stream):
             self.nccl.ncclRecv(
                 buffer_type(tensor.data_ptr()),
@@ -623,6 +647,15 @@ class P2pNcclEngine:
                 cudaStream_t(stream.cuda_stream),
             )
         stream.synchronize()
+        duration = time.time() - start_time
+        logger.info(
+            "📥[NCCL RECV] tensor_id:%s size_bytes:%d duration_ms:%.3f src:%d rank:%d",
+            tensor_id,
+            int(tensor_size),
+            duration * 1000,
+            src,
+            self.rank,
+        )
 
     def close(self) -> None:
         self._listener_thread.join()

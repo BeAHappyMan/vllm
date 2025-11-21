@@ -302,14 +302,9 @@ class P2pNcclConnector(KVConnectorBase_V1):
             remote_address = ip + ":" + str(port + self._rank)
 
             kv_cache = extract_kv_from_layer(kv_layer, request.block_ids)
-            import time
-            # 获取时间戳
-            kv_cache_start = time.time()
             self.p2p_nccl_engine.send_tensor(
                 request_id + "#" + layer_name, kv_cache, remote_address
             )
-            kv_cache_end = time.time()
-            logger.info("🚀 P2P NCCL send_tensor time: %.6f seconds", kv_cache_end - kv_cache_start)
 
     def wait_for_save(self):
         if self.is_producer:
