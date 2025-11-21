@@ -158,6 +158,7 @@ async def handle_request():
             f"___prefill_addr_{prefill_zmq_addr}___decode_addr_"
             f"{decode_zmq_addr}_{random_uuid()}"
         )
+        print(f"Generated request_id: {request_id}")
 
         # finish prefill
         async for _ in forward_request(
