@@ -500,6 +500,7 @@ class P2pNcclEngine:
             )
 
     def send_sync(self, item: SendQueueItem) -> bool:
+        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s", item.tensor.shape, item.tensor.dtype)
         if item.remote_address is None:
             return False
         if item.remote_address not in self.socks:
