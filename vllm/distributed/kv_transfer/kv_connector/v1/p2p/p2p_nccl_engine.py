@@ -377,6 +377,7 @@ class P2pNcclEngine:
 
             remote_address, message = self.router_socket.recv_multipart()
             data = msgpack.loads(message)
+            logger.info("Received data: %s", data)
             if data["cmd"] == "NEW":
                 unique_id = self.nccl.unique_id_from_bytes(bytes(data["unique_id"]))
                 with torch.cuda.device(self.device):
