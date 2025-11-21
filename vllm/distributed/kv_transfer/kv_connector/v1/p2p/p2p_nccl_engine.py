@@ -223,6 +223,7 @@ class P2pNcclEngine:
                 with set_p2p_nccl_context(self.nccl_num_channels):
                     comm: ncclComm_t = self.nccl.ncclCommInitRank(2, unique_id, rank)
                 self.comms[remote_address] = (comm, rank)
+                logger.info(123)
                 logger.info(
                     "🤝ncclCommInitRank Success, %s👉%s, MyRank:%s",
                     self.zmq_address,
@@ -387,6 +388,7 @@ class P2pNcclEngine:
                             2, unique_id, rank
                         )
                     self.comms[remote_address.decode()] = (comm, rank)
+                    logger.info("new")
                     logger.info(
                         "🤝ncclCommInitRank Success, %s👈%s, MyRank:%s",
                         self.zmq_address,
