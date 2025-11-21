@@ -591,6 +591,7 @@ class P2pNcclEngine:
             f"this nccl communicator is created to work on {self.device}, "
             f"but the input tensor is on {tensor.device}"
         )
+        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s", tensor.shape, tensor.dtype)
         if stream is None:
             stream = current_stream()
 
