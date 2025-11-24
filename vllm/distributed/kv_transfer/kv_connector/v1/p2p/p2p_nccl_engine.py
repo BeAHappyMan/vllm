@@ -239,7 +239,7 @@ class P2pNcclEngine:
         tensor: torch.Tensor,
         remote_address: str | None = None,
     ) -> bool:
-        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s", tensor.shape, tensor.dtype)
+        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s, send_type:%s", tensor.shape, tensor.dtype, self.send_type)
         if remote_address is None:
             with self.recv_store_cv:
                 self.recv_store[tensor_id] = tensor
