@@ -223,7 +223,6 @@ class P2pNcclEngine:
                 with set_p2p_nccl_context(self.nccl_num_channels):
                     comm: ncclComm_t = self.nccl.ncclCommInitRank(2, unique_id, rank)
                 self.comms[remote_address] = (comm, rank)
-                logger.info(123)
                 logger.info(
                     "🤝ncclCommInitRank Success, %s👉%s, MyRank:%s",
                     self.zmq_address,
@@ -239,13 +238,12 @@ class P2pNcclEngine:
         tensor: torch.Tensor,
         remote_address: str | None = None,
     ) -> bool:
-        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s, send_type:%s", tensor.shape, tensor.dtype, self.send_type)
         if remote_address is None:
             with self.recv_store_cv:
                 self.recv_store[tensor_id] = tensor
                 self.recv_store_cv.notify()
             return True
-        logger.info("🚧 123123 P2pNcclEngine send, tensor shape:%s, dtype:%s", tensor.shape, tensor.dtype)
+
         item = SendQueueItem(
             tensor_id=tensor_id, remote_address=remote_address, tensor=tensor
         )
@@ -312,7 +310,6 @@ class P2pNcclEngine:
         tensor_id: str,
         remote_address: str | None = None,
     ) -> torch.Tensor:
-        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s", tensor.shape, tensor.dtype)
         if self.send_type == "PUT" or self.send_type == "PUT_ASYNC":
             start_time = time.time()
             with self.recv_store_cv:
@@ -378,7 +375,6 @@ class P2pNcclEngine:
 
             remote_address, message = self.router_socket.recv_multipart()
             data = msgpack.loads(message)
-            logger.info("Received data: %s", data)
             if data["cmd"] == "NEW":
                 unique_id = self.nccl.unique_id_from_bytes(bytes(data["unique_id"]))
                 with torch.cuda.device(self.device):
@@ -388,7 +384,6 @@ class P2pNcclEngine:
                             2, unique_id, rank
                         )
                     self.comms[remote_address.decode()] = (comm, rank)
-                    logger.info("new")
                     logger.info(
                         "🤝ncclCommInitRank Success, %s👈%s, MyRank:%s",
                         self.zmq_address,
@@ -503,7 +498,6 @@ class P2pNcclEngine:
             )
 
     def send_sync(self, item: SendQueueItem) -> bool:
-        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s", item.tensor.shape, item.tensor.dtype)
         if item.remote_address is None:
             return False
         if item.remote_address not in self.socks:
@@ -597,7 +591,6 @@ class P2pNcclEngine:
             f"this nccl communicator is created to work on {self.device}, "
             f"but the input tensor is on {tensor.device}"
         )
-        logger.info("🚧 P2pNcclEngine send, tensor shape:%s, dtype:%s", tensor.shape, tensor.dtype)
         if stream is None:
             stream = current_stream()
 
