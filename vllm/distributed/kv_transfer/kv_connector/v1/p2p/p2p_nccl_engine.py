@@ -615,7 +615,12 @@ class P2pNcclEngine:
         )
         if stream is None:
             stream = current_stream()
-
+        logger.info(
+            "ncclsend start, tensor_id:%s, rank:%d at %s",
+            tensor.id,
+            self.rank,
+            time.time_ns(),
+        )
         with torch.cuda.stream(stream):
             self.nccl.ncclSend(
                 buffer_type(tensor.data_ptr()),
@@ -626,6 +631,12 @@ class P2pNcclEngine:
                 cudaStream_t(stream.cuda_stream),
             )
         stream.synchronize()
+        logger.info(
+            "ncclsend end, tensor_id:%s, rank:%d at %s",
+            tensor.id,
+            self.rank,
+            time.time_ns(),
+        )
 
     def recv(self, comm, tensor: torch.Tensor, src: int, stream=None):
         assert tensor.device == self.device, (
