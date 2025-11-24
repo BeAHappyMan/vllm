@@ -563,17 +563,16 @@ class Worker(WorkerBase):
 
         with self.annotate_profile(scheduler_output):
             # Log P/D computation start
-            computation_start_time = time.time()
-            # computation_type = "prefill" if any(req.is_prefill for req in scheduler_output.scheduled_new_reqs) else "decode"
-            # logger.info(f"{computation_type.upper()} computation start - timestamp: {computation_start_time}, num_tokens: {num_scheduled_tokens}")
+            computation_start_time = time.time_ns()
+            logger.info(f"computation start - timestamp: {computation_start_time}, num_tokens: {num_scheduled_tokens}")
             
             output = self.model_runner.execute_model(
                 scheduler_output, intermediate_tensors
             )
             
             # Log P/D computation end
-            computation_end_time = time.time()
-            logger.info(f"computation end - timestamp: {computation_end_time}, duration: {computation_end_time - computation_start_time:.4f}s, num_tokens: {num_scheduled_tokens}")
+            computation_end_time = time.time_ns()
+            logger.info(f"computation end - timestamp: {computation_end_time}, duration: {computation_end_time - computation_start_time:.4f}ns, num_tokens: {num_scheduled_tokens}")
             
             if isinstance(output, (ModelRunnerOutput, NoneType)):
                 return output
