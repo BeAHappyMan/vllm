@@ -52,17 +52,17 @@ def maybe_transfer_kv_layer(func: Callable) -> Callable:
 
         # Wait for KV layer on entry
         kv_load_start_time = time.time()
-        logger.info(f"KV cache transfer load start - layer: {layer_name}, timestamp: {kv_load_start_time}")
+        # logger.info(f"KV cache transfer load start - layer: {layer_name}, timestamp: {kv_load_start_time}")
         connector.wait_for_layer_load(layer_name)
         kv_load_end_time = time.time()
-        logger.info(f"KV cache transfer load end - layer: {layer_name}, timestamp: {kv_load_end_time}, duration: {kv_load_end_time - kv_load_start_time:.4f}s")
+        # logger.info(f"KV cache transfer load end - layer: {layer_name}, timestamp: {kv_load_end_time}, duration: {kv_load_end_time - kv_load_start_time:.4f}s")
 
         # Execute the function
         result = func(*args, **kwargs)
 
         # Save KV cache layer on exit
         kv_save_start_time = time.time()
-        logger.info(f"KV cache transfer save start - layer: {layer_name}, timestamp: {kv_save_start_time}")
+        # logger.info(f"KV cache transfer save start - layer: {layer_name}, timestamp: {kv_save_start_time}")
         connector.save_kv_layer(layer_name, kv_cache, attn_metadata)
         kv_save_end_time = time.time()
         logger.info(f"KV cache transfer save end - layer: {layer_name}, timestamp: {kv_save_end_time}, duration: {kv_save_end_time - kv_save_start_time:.4f}s")
