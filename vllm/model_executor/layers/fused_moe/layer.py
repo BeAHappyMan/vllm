@@ -1751,7 +1751,7 @@ class FusedMoE(CustomOp):
             if do_naive_dispatch_combine:
                 import time
                 dispatch_start_time = time.time()
-                logger.info(f"EP dispatch start - layer: {self.layer_name}, timestamp: {dispatch_start_time}")
+                # logger.info(f"EP dispatch start - layer: {self.layer_name}, timestamp: {dispatch_start_time}")
                 
                 hidden_states_combined, router_logits = get_ep_group().dispatch(
                     hidden_states, router_logits, self.is_sequence_parallel
@@ -1763,8 +1763,8 @@ class FusedMoE(CustomOp):
             # Matrix multiply with EP communication logging
             import time
             ep_comm_start_time = time.time()
-            if self.ep_size > 1:
-                logger.info(f"EP communication start - layer: {self.layer_name}, timestamp: {ep_comm_start_time}, ep_size: {self.ep_size}")
+            # if self.ep_size > 1:
+            #     logger.info(f"EP communication start - layer: {self.layer_name}, timestamp: {ep_comm_start_time}, ep_size: {self.ep_size}")
             
             final_hidden_states = self.quant_method.apply(
                 layer=self,
