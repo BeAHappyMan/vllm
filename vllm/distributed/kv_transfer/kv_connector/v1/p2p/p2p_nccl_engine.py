@@ -238,6 +238,14 @@ class P2pNcclEngine:
         tensor: torch.Tensor,
         remote_address: str | None = None,
     ) -> bool:
+        logger.info(
+            "💯Send to %s, tensor_id:%s, rank:%d at %s use type %s",
+            remote_address,
+            tensor_id,
+            self.rank,
+            time.time_ns(),
+            self.send_type
+        )
         if remote_address is None:
             with self.recv_store_cv:
                 self.recv_store[tensor_id] = tensor
@@ -310,6 +318,13 @@ class P2pNcclEngine:
         tensor_id: str,
         remote_address: str | None = None,
     ) -> torch.Tensor:
+        logger.info(
+            "💯Recv From %s, tensor_id:%s, rank:%d at %s",
+            remote_address,
+            tensor_id,
+            self.rank,
+            time.time_ns(),
+        )
         if self.send_type == "PUT" or self.send_type == "PUT_ASYNC":
             start_time = time.time()
             with self.recv_store_cv:
