@@ -42,6 +42,7 @@ def _listen_for_register(poller, router_socket):
             # data: {"type": "P", "http_address": "ip:port",
             #        "zmq_address": "ip:port"}
             data = msgpack.loads(message)
+            print(f"Received message from {remote_address}, data: {data}")
             if data["type"] == "P":
                 global prefill_instances
                 global prefill_cv
