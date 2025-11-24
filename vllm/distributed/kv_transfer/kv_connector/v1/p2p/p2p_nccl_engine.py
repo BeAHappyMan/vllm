@@ -239,7 +239,7 @@ class P2pNcclEngine:
         remote_address: str | None = None,
     ) -> bool:
         logger.info(
-            "💯Send to %s, tensor_id:%s, rank:%d at %s use type %s",
+            "💯ready to Send to %s, tensor_id:%s, rank:%d at %s use type %s",
             remote_address,
             tensor_id,
             self.rank,
@@ -513,6 +513,13 @@ class P2pNcclEngine:
             )
 
     def send_sync(self, item: SendQueueItem) -> bool:
+        logger.info(
+            "do Send Sync, Send to %s, tensor_id:%s, rank:%d at %s",
+            item.remote_address,
+            item.tensor_id,
+            self.rank,
+            time.time_ns(),
+        )
         if item.remote_address is None:
             return False
         if item.remote_address not in self.socks:
