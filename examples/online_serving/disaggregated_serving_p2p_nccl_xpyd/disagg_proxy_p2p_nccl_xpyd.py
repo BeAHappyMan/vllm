@@ -159,19 +159,19 @@ async def handle_request():
             f"___prefill_addr_{prefill_zmq_addr}___decode_addr_"
             f"{decode_zmq_addr}_{random_uuid()}"
         )
-        print(f"Generated request_id: {request_id}")
+        # print(f"Generated request_id: {request_id}")
 
         # finish prefill
         async for _ in forward_request(
             f"http://{prefill_addr}{request.path}", prefill_request, request_id
         ):
             continue
-        print(f"Prefill finished, prefill_request: {prefill_request}, {request_id}")
+        # print(f"Prefill finished, prefill_request: {prefill_request}, {request_id}")
         # return decode
         generator = forward_request(
             f"http://{decode_addr}{request.path}", original_request_data, request_id
         )
-        print(f"Decode started, original_request_data: {original_request_data}, {request_id}")
+        # print(f"Decode started, original_request_data: {original_request_data}, {request_id}")
         response = await make_response(generator)
         response.timeout = None
 

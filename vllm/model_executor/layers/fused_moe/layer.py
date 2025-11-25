@@ -1751,20 +1751,20 @@ class FusedMoE(CustomOp):
             if do_naive_dispatch_combine:
                 import time
                 dispatch_start_time = time.time_ns()
-                logger.info(f"EP dispatch start - layer: {self.layer_name}, timestamp: {dispatch_start_time}")
+                # logger.info(f"EP dispatch start - layer: {self.layer_name}, timestamp: {dispatch_start_time}")
                 
                 hidden_states_combined, router_logits = get_ep_group().dispatch(
                     hidden_states, router_logits, self.is_sequence_parallel
                 )
                 
                 dispatch_end_time = time.time_ns()
-                logger.info(f"EP dispatch end - layer: {self.layer_name}, timestamp: {dispatch_end_time}, duration: {dispatch_end_time - dispatch_start_time}")
+                logger.info(f"EP dispatch - layer: {self.layer_name}, from {dispatch_start_time} to {dispatch_end_time}")
 
             # Matrix multiply with EP communication logging
             import time
-            ep_comm_start_time = time.time_ns()
-            if self.ep_size > 1:
-                logger.info(f"EP communication start - layer: {self.layer_name}, timestamp: {ep_comm_start_time}, ep_size: {self.ep_size}")
+            # ep_comm_start_time = time.time_ns()
+            # if self.ep_size > 1:
+            #     logger.info(f"EP communication start - layer: {self.layer_name}, timestamp: {ep_comm_start_time}, ep_size: {self.ep_size}")
             
             final_hidden_states = self.quant_method.apply(
                 layer=self,
@@ -1793,9 +1793,9 @@ class FusedMoE(CustomOp):
                 logical_replica_count=self.logical_replica_count,
             )
             
-            if self.ep_size > 1:
-                ep_comm_end_time = time.time_ns()
-                logger.info(f"EP communication end - layer: {self.layer_name}, timestamp: {ep_comm_end_time}, duration: {ep_comm_end_time - ep_comm_start_time}, ep_size: {self.ep_size}")
+            # if self.ep_size > 1:
+            #     ep_comm_end_time = time.time_ns()
+            #     logger.info(f"EP communication end - layer: {self.layer_name}, timestamp: {ep_comm_end_time}, duration: {ep_comm_end_time - ep_comm_start_time}, ep_size: {self.ep_size}")
 
             if has_separate_shared_experts:
                 assert self.shared_experts is not None
@@ -1826,12 +1826,12 @@ class FusedMoE(CustomOp):
                 if do_naive_dispatch_combine:
                     import time
                     combine_start_time = time.time_ns()
-                    logger.info(f"EP combine start - layer: {self.layer_name}, timestamp: {combine_start_time}")
+                    # logger.info(f"EP combine start - layer: {self.layer_name}, timestamp: {combine_start_time}")
                     
                     states = get_ep_group().combine(states, self.is_sequence_parallel)
                     
                     combine_end_time = time.time_ns()
-                    logger.info(f"EP combine end - layer: {self.layer_name}, timestamp: {combine_end_time}, duration: {combine_end_time - combine_start_time}")
+                    logger.info(f"EP combinev- layer: {self.layer_name}, from {combine_start_time} to {combine_end_time}")
                 return states
 
             if self.shared_experts is not None:

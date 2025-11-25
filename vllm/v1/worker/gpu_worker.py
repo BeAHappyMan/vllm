@@ -573,7 +573,6 @@ class Worker(WorkerBase):
             
             # Log P/D computation end
             computation_end_time = time.time_ns()
-            logger.info(get_ep_group().world_size)
             logger.info(f"computation end - timestamp: {computation_end_time}, duration: {computation_end_time - computation_start_time:.4f}ns, num_tokens: {num_scheduled_tokens}")
             
             if isinstance(output, (ModelRunnerOutput, NoneType)):

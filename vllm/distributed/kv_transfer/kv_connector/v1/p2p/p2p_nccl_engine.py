@@ -239,12 +239,11 @@ class P2pNcclEngine:
         remote_address: str | None = None,
     ) -> bool:
         logger.info(
-            "💯ready to Send to %s, tensor_id:%s, rank:%d at %s use type %s",
+            "💯ready to Send to %s, tensor_id:%s, rank:%d at %s",
             remote_address,
             tensor_id,
             self.rank,
-            time.time_ns(),
-            self.send_type
+            time.time_ns()
         )
         if remote_address is None:
             with self.recv_store_cv:
@@ -318,13 +317,6 @@ class P2pNcclEngine:
         tensor_id: str,
         remote_address: str | None = None,
     ) -> torch.Tensor:
-        logger.info(
-            "💯Recv From %s, tensor_id:%s, rank:%d at %s",
-            remote_address,
-            tensor_id,
-            self.rank,
-            time.time_ns(),
-        )
         if self.send_type == "PUT" or self.send_type == "PUT_ASYNC":
             start_time = time.time()
             with self.recv_store_cv:
@@ -513,13 +505,6 @@ class P2pNcclEngine:
             )
 
     def send_sync(self, item: SendQueueItem) -> bool:
-        logger.info(
-            "do Send Sync, Send to %s, tensor_id:%s, rank:%d at %s",
-            item.remote_address,
-            item.tensor_id,
-            self.rank,
-            time.time_ns(),
-        )
         if item.remote_address is None:
             return False
         if item.remote_address not in self.socks:
