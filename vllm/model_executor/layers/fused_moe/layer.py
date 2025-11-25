@@ -1831,7 +1831,7 @@ class FusedMoE(CustomOp):
                     states = get_ep_group().combine(states, self.is_sequence_parallel)
                     
                     combine_end_time = time.time_ns()
-                    logger.info(f"EP combinev- layer: {self.layer_name}, from {combine_start_time} to {combine_end_time}")
+                    logger.info(f"EP combine - layer: {self.layer_name}, from {combine_start_time} to {combine_end_time}")
                 return states
 
             if self.shared_experts is not None:

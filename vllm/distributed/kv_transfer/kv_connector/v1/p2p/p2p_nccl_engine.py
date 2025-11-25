@@ -601,7 +601,7 @@ class P2pNcclEngine:
         if stream is None:
             stream = current_stream()
         logger.info(
-            "ncclsend start, rank:%d at %s",
+            # "ncclsend start, rank:%d at %s",
             self.rank,
             time.time_ns(),
         )
@@ -616,7 +616,8 @@ class P2pNcclEngine:
             )
         stream.synchronize()
         logger.info(
-            "ncclsend end, rank:%d at %s",
+            "ncclsend end, kvcache size:%d, rank:%d at %s",
+            tensor.element_size() * tensor.numel(),
             self.rank,
             time.time_ns(),
         )
