@@ -42,7 +42,7 @@ def _listen_for_register(poller, router_socket):
             # data: {"type": "P", "http_address": "ip:port",
             #        "zmq_address": "ip:port"}
             data = msgpack.loads(message)
-            print(f"Received message from {remote_address}, data: {data}")
+            # print(f"Received message from {remote_address}, data: {data}")
             if data["type"] == "P":
                 global prefill_instances
                 global prefill_cv
@@ -166,11 +166,12 @@ async def handle_request():
             f"http://{prefill_addr}{request.path}", prefill_request, request_id
         ):
             continue
-
+        print(f"Prefill finished, prefill_request: {prefill_request}, {request_id}")
         # return decode
         generator = forward_request(
             f"http://{decode_addr}{request.path}", original_request_data, request_id
         )
+        print(f"Decode started, original_request_data: {original_request_data}, {request_id}")
         response = await make_response(generator)
         response.timeout = None
 
