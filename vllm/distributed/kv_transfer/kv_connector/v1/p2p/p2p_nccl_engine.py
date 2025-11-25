@@ -600,11 +600,11 @@ class P2pNcclEngine:
         )
         if stream is None:
             stream = current_stream()
-        # logger.info(
-        #     # "ncclsend start, rank:%d at %s",
-        #     self.rank,
-        #     time.time_ns(),
-        # )
+        logger.info(
+            "ncclsend start, rank:%d at %s",
+            self.rank,
+            time.time_ns(),
+        )
         with torch.cuda.stream(stream):
             self.nccl.ncclSend(
                 buffer_type(tensor.data_ptr()),
