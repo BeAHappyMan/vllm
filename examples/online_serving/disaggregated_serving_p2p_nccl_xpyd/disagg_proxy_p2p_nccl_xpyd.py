@@ -175,6 +175,7 @@ async def handle_request():
         print(f"Decode finish, decode_request: http://{decode_addr}{request.path}")
         response = await make_response(generator)
         response.timeout = None
+        print(f"make response: {response}")
 
         return response
 
