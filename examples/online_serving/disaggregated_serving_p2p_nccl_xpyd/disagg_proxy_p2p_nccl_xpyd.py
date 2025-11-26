@@ -106,7 +106,7 @@ def random_uuid() -> str:
 
 
 async def forward_request(url, data, request_id):
-    print(url, request_id)
+    # print(url, request_id)
     async with aiohttp.ClientSession(timeout=AIOHTTP_TIMEOUT) as session:
         headers = {
             "Authorization": f"Bearer {os.environ.get('OPENAI_API_KEY')}",
@@ -167,12 +167,12 @@ async def handle_request():
             f"http://{prefill_addr}{request.path}", prefill_request, request_id
         ):
             continue
-        # print(f"Prefill , prefill_request: {prefill_request}, {request_id}")
+        print(f"Prefill finish, prefill_request: http://{prefill_addr}{request.path}")
         # return decode
         generator = forward_request(
             f"http://{decode_addr}{request.path}", original_request_data, request_id
         )
-        # print(f"Decode started, original_request_data: {original_request_data}, {request_id}")
+        print(f"Decode finish, decode_request: http://{decode_addr}{request.path}")
         response = await make_response(generator)
         response.timeout = None
 
