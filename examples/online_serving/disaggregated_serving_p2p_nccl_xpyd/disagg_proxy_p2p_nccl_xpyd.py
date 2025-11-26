@@ -172,7 +172,7 @@ async def handle_request():
         generator = forward_request(
             f"http://{decode_addr}{request.path}", original_request_data, request_id
         )
-        print(f"Decode started, original_request_data: {original_request_data}, {request_id}")
+        # print(f"Decode started, original_request_data: {original_request_data}, {request_id}")
         response = await make_response(generator)
         response.timeout = None
 
